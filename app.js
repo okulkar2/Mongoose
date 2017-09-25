@@ -67,17 +67,35 @@ app.post('/books', function(req, res){
 
 });
 
-app.post('/books2', function(req, res){
+app.put('/books/:id', function(req, res){
 
-	Book.create(req.body, function(err, book){
+	Book.findOneAndUpdate({
+		_id: req.params.id
+	},{ $set: { title: req.body.title } },
+	{upsert: true}, 
+	function(err, book){
+
 		if(err){
-			console.log("Error saving file");
+			res.send("The given book cannot be Updated");
 		}else{
 			console.log(book);
-			res.send(book);
+			res.json(book);
 		}
-	});
+	})
+});
 
+app.delete('/books/:id', function(req, res){
+
+	Book.findOneAndRemove({
+		_id: req.params.id
+	}, function(err, book){
+		if(err){
+			res.send("Error Deleting Book");
+		}else{
+			console.log(book);
+			res.send("Book Deleted from the System");
+		}
+	})
 });
 
 app.listen(port, function(){
